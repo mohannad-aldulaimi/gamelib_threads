@@ -5,11 +5,11 @@ aPackageInfo = [
 	:developer = "Ph.T, Dev. Mohannad Alayash",
 	:email = "mohannadazazalayash@gmail.com",
 	:license = "MIT License",
-	:version = "1.0.1",
+	:version = "1.0.3",
 	:ringversion = "1.25",
 	:versions = 	[
 		[
-			:version = "1.0.1",
+			:version = "1.0.3",
 			:branch = "main"
 		]
 	],
@@ -25,6 +25,7 @@ aPackageInfo = [
 		"README.md"
 	],
 	:ringfolderfiles = 	[
+		"bin/ring_allegro_threads.dll",
 		"bin/load/gamelib_threads.ring",
 		"extensions/ringallegro_threads/allegro.cf",
 		"extensions/ringallegro_threads/allegro.rh",
@@ -32,11 +33,9 @@ aPackageInfo = [
 		"extensions/ringallegro_threads/buildvc_allegro5.2.8.bat",
 		"extensions/ringallegro_threads/buildvc_allegro5.2.8_x64.bat",
 		"extensions/ringallegro_threads/buildvc_x64.bat",
-		"extensions/ringallegro_threads/document.bat",
-		"extensions/ringallegro_threads/gamelib.ring",
 		"extensions/ringallegro_threads/gamelib_threads.ring",
 		"extensions/ringallegro_threads/gencode.bat",
-		"extensions/ringallegro_threads/ring_allegro.c",
+		"extensions/ringallegro_threads/ring_allegro.c"
 	],
 	:windowsfiles = 	[
 

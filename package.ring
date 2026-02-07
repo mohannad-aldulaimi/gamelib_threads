@@ -2,14 +2,14 @@ aPackageInfo = [
 	:name = "The gamelib_threads Package",
 	:description = "Our gamelib_threads package using the Ring programming language",
 	:folder = "gamelib_threads",
-	:developer = "",
-	:email = "",
+	:developer = "Ph.T, Dev. Mohannad Alayash",
+	:email = "mohannadazazalayash@gmail.com",
 	:license = "MIT License",
-	:version = "1.0.0",
+	:version = "1.0.1",
 	:ringversion = "1.25",
 	:versions = 	[
 		[
-			:version = "1.0.0",
+			:version = "1.0.1",
 			:branch = "main"
 		]
 	],

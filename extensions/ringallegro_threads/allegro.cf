@@ -1,0 +1,198 @@
+<code>
+/* Copyright (c) 2013-2016 Mahmoud Fayed <msfclipper@yahoo.com> */
+
+#define ALLEGRO_NO_MAGIC_MAIN
+
+#include <allegro5/allegro.h>
+</code>
+
+<runcode>
+aNumberTypes + "GLint"
+aNumberTypes + "GLuint"
+aNumberTypes + "unsigned"
+aNumberTypes + "GLboolean"
+aNumberTypes + "GLdouble"
+aNumberTypes + "GLfloat"
+aNumberTypes + "GLchar"
+aNumberTypes + "GLsizeiptr"
+aNumberTypes + "GLintptr"
+aNumberTypes + "GLbyte"
+aNumberTypes + "GLshort"
+aNumberTypes + "GLubyte"
+aNumberTypes + "GLushort"
+aNumberTypes + "GLulong"
+aNumberTypes + "GLclampd"
+
+aEnumTypes + "GLbitfield"
+aEnumTypes + "GLenum"
+aEnumTypes + "GLsizei"
+aEnumTypes + "GLclampf"
+
+
+aNumberTypes + "unsigned int"
+aNumberTypes + "float"
+
+aEnumTypes + "ALLEGRO_AUDIO_DEPTH"
+aEnumTypes + "ALLEGRO_CHANNEL_CONF"
+
+aEnumTypes + "ALLEGRO_JOYFLAGS"
+
+</runcode>
+
+<funcstart>
+al
+</funcstart>
+
+
+<register>
+void al_exit(void)
+void al_run_main(void)
+</register>
+
+<code>
+RING_FUNC(ring_al_exit)
+{
+	if ( RING_API_PARACOUNT != 0 ) {
+		RING_API_ERROR(RING_API_BADPARACOUNT);
+		return ;
+	}
+	exit(0);
+}
+
+VM *globalVM ;
+
+int al_usr_main(int argc, char **argv)
+{
+	ring_vm_runcode(globalVM,"al_game_start()");	
+	exit(0);
+	return 0;
+}
+
+RING_FUNC(ring_al_run_main)
+{
+	globalVM = (VM *) pPointer ;
+	al_run_main(globalVM->pRingState->nArgc,globalVM->pRingState->pArgv,al_usr_main);	
+}
+</code>
+
+int al_init(void)
+
+<comment>
+Configuration files
+</comment>
+
+<runcode>
+aNumberTypes + "al_fixed"
+</runcode>
+
+ALLEGRO_CONFIG *al_create_config(void)
+void al_destroy_config(ALLEGRO_CONFIG *config)
+ALLEGRO_CONFIG *al_load_config_file(const char *filename)
+ALLEGRO_CONFIG *al_load_config_file_f(ALLEGRO_FILE *file)
+bool al_save_config_file(const char *filename, const ALLEGRO_CONFIG *config)
+bool al_save_config_file_f(ALLEGRO_FILE *file, const ALLEGRO_CONFIG *config)
+void al_add_config_section(ALLEGRO_CONFIG *config, const char *name)
+void al_add_config_comment(ALLEGRO_CONFIG *config, const char *section, const char *comment)
+const char *al_get_config_value(const ALLEGRO_CONFIG *config,const char *section, const char *key)
+void al_set_config_value(ALLEGRO_CONFIG *config,const char *section, const char *key, const char *value)
+char const *al_get_first_config_section(ALLEGRO_CONFIG const *config,ALLEGRO_CONFIG_SECTION **iterator)
+char const *al_get_next_config_section(ALLEGRO_CONFIG_SECTION **iterator)
+char const *al_get_first_config_entry(ALLEGRO_CONFIG const *config,char const *section, ALLEGRO_CONFIG_ENTRY **iterator)
+char const *al_get_next_config_entry(ALLEGRO_CONFIG_ENTRY **iterator)
+ALLEGRO_CONFIG *al_merge_config(const ALLEGRO_CONFIG *cfg1,const ALLEGRO_CONFIG *cfg2)
+void al_merge_config_into(ALLEGRO_CONFIG *master, const ALLEGRO_CONFIG *add)
+
+
+
+<comment>
+Time routines
+</comment>
+
+double al_get_time(void)
+void al_init_timeout(ALLEGRO_TIMEOUT *timeout, double seconds)
+void al_rest(double seconds)
+
+<comment>
+Threads
+</comment>
+
+<code>
+void *al_func_thread(ALLEGRO_THREAD *thread, void *pPointer) 
+{  
+	List *pList;
+	VM *pVM;
+	const char *cStr;
+	pList = (List *) pPointer ;
+	pVM = (VM *) ring_list_getpointer(pList,2);
+	cStr = ring_list_getstring(pList,1);
+	ring_vm_runcodefromthread(pVM,cStr);	
+	ring_list_delete(pList);
+	return NULL;
+}
+
+void *al_func_detached_thread(void *pPointer) 
+{  
+	return al_func_thread(NULL,pPointer);
+}
+
+RING_FUNC(ring_al_create_thread)
+{
+	ALLEGRO_THREAD *pThread;
+	List *pList;
+	if ( RING_API_PARACOUNT != 1 ) {
+		RING_API_ERROR(RING_API_MISS1PARA);
+		return ;
+	}
+	if ( ! RING_API_ISSTRING(1) ) {
+		RING_API_ERROR(RING_API_BADPARATYPE);
+		return ;
+	}	
+	pList = ring_list_new(0);
+	ring_list_addstring(pList,RING_API_GETSTRING(1));
+	ring_list_addpointer(pList,pPointer);
+	ring_vm_mutexfunctions((VM *) pPointer,al_create_mutex,al_lock_mutex,al_unlock_mutex,al_destroy_mutex);
+	pThread = al_create_thread(al_func_thread, pList);
+	al_start_thread(pThread);
+	RING_API_RETCPOINTER(pThread,"ALLEGRO_THREAD");	
+}
+
+RING_FUNC(ring_al_run_detached_thread)
+{
+	List *pList;
+	if ( RING_API_PARACOUNT != 1 ) {
+		RING_API_ERROR(RING_API_MISS1PARA);
+		return ;
+	}
+	if ( ! RING_API_ISSTRING(1) ) {
+		RING_API_ERROR(RING_API_BADPARATYPE);
+		return ;
+	}	
+	pList = ring_list_new(0);
+	ring_list_addstring(pList,RING_API_GETSTRING(1));
+	ring_list_addpointer(pList,pPointer);
+	ring_vm_mutexfunctions((VM *) pPointer,al_create_mutex,al_lock_mutex,al_unlock_mutex,al_destroy_mutex);
+	al_run_detached_thread(al_func_detached_thread, pList);
+}
+</code>
+
+<register>
+ALLEGRO_THREAD *al_create_thread(void)
+void al_run_detached_thread(void)
+</register>
+
+void al_start_thread(ALLEGRO_THREAD *thread)
+void al_join_thread(ALLEGRO_THREAD *thread, void **ret_value)
+void al_set_thread_should_stop(ALLEGRO_THREAD *thread)
+bool al_get_thread_should_stop(ALLEGRO_THREAD *thread)
+void al_destroy_thread(ALLEGRO_THREAD *thread)
+ALLEGRO_MUTEX *al_create_mutex(void)
+ALLEGRO_MUTEX *al_create_mutex_recursive(void)
+void al_lock_mutex(ALLEGRO_MUTEX *mutex)
+void al_unlock_mutex(ALLEGRO_MUTEX *mutex)
+void al_destroy_mutex(ALLEGRO_MUTEX *mutex)
+ALLEGRO_COND *al_create_cond(void)
+void al_destroy_cond(ALLEGRO_COND *cond)
+void al_wait_cond(ALLEGRO_COND *cond, ALLEGRO_MUTEX *mutex)
+int al_wait_cond_until(ALLEGRO_COND *cond, ALLEGRO_MUTEX *mutex,const ALLEGRO_TIMEOUT *timeout)
+void al_broadcast_cond(ALLEGRO_COND *cond)
+void al_signal_cond(ALLEGRO_COND *cond)
